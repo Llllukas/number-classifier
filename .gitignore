@@ -1,2 +1,5 @@
 # Ignore the folder containing the MNIST dataset
 MNIST_SCV/
+MNIST_CSV/mnist_test.csv
+MNIST_CSV/mnist_train.csv
+MNIST_CSV/generate_mnist_csv.py
