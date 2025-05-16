@@ -1,0 +1,2 @@
+# Ignore the folder containing the MNIST dataset
+MNIST_SCV/
