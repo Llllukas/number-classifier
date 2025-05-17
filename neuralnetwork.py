@@ -7,36 +7,57 @@ Hidden = 600
 #number of features (input neurons)
 Feature = 784 # 28 x 28
 
-#RELU
+#RELU R^600 -> R^600
 def relu(x):
-    if x >= 0:
-        return x
-    else:
-        return 0
+    for i, value in enumerate(x):
+        if value < 0:
+            x[i] = 0
+    return x
+            
     
-#derivative of RELU
-def delrelu(x):
-    if x >= 0:
-        return 1
+#jacobian of RELU (derivative of i-th entry with respect to j-th entry of V2) R^600 x I x I -> R
+def delRelu(V2,i,j):
+    if i == j and V2[i] >= 0:
+        return V2[i]
     else:
-        return 0
+        return 0 
+
+#softmax R^10 -> R^10
+def softmax(x):
+    out = []
+    for i in range(len(x)):
+        row = [(v-x[i]) for v in x]
+        expon = [(np.exp(v)) for v in row]
+        out.append(1/(np.sum(expon)))
+    return out
     
+
+
+#jacobian of softmax (derivative of i-th entry with respect to j-th entry of V3) R^10 x I x I -> R
+def delSoftmax(V3,i,j):
+    expon = [np.exp(i) for i in V3]
+    norm = np.sum(expon)    
+    if i == j:
+        return ((expon[i]/norm) - ((expon[i]**2)/(norm**2)))
+    else:
+        return -(expon[i]*expon[j])/(norm**2)
+
 
 #activation function
 def activ(x):
     return relu(x)
 
-#derivative of activation function
-def delActiv(x):
-    return delrelu(x)
+#derivative of activation function !it is hard-coded in gradientDescent.py that the jacobian is a diagonal matrix!
+def delActiv(x,i,j):
+    return delRelu(x,i,j)
     
 #output activation function
 def outActiv(x):
-    return relu(x)
+    return softmax(x)
 
 #derivative of output activation function
-def delOutActiv(x):
-    return delrelu(x)
+def delOutActiv(x,i,j):
+    return delSoftmax(x,i,j)
 
 #neural network function !output the value at every node including hidden layer! interpretation will be done seperately
 #input a single vector (x_1, ... x_N)
@@ -56,7 +77,7 @@ def neuralNetwork(input):
     Values2 = np.dot(Values1, w1)
 
     #put activation function on Values2
-    activ2 = [activ(i) for i in Values2]
+    activ2 = activ(Values2)
 
     #prepend 1 to activated Hidden layer values vector
     activ2 = np.insert(activ2, 0, 1)
@@ -65,7 +86,7 @@ def neuralNetwork(input):
     Values3 = np.dot(activ2,w2)
 
     #commented out
-    #Output = [outActiv(i) for i in Values3]
+    #Output = outActiv(Values3)
     #print(Output)
 
     return (Values2, Values3)
@@ -74,4 +95,4 @@ def neuralNetwork(input):
 if __name__ == "__main__":
     with open("single_example.csv", "r") as csvfile:
         first_line = csvfile.readline()
-    neuralNetwork(first_line)
+    print(neuralNetwork(first_line))

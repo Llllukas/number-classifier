@@ -5,7 +5,7 @@ import numpy as np
 
 
 def generateWeights():
-    #generate w1 (weights between input and hidden layer), unif(-1,2) distribution
+    #generate w1 (weights between input and hidden layer), unif(-1,1) distribution
     w1 = np.random.uniform(low=-1, high=1, size=(Feature + 1, Hidden))
     #save to w1.csv with 5 decimal places
     np.savetxt("w1.csv", w1, delimiter=",", fmt="%.5f")
