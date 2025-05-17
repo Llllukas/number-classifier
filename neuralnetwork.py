@@ -68,7 +68,10 @@ def neuralNetwork(input):
     w2 = np.loadtxt('w2.csv', delimiter=',')    
 
     #turn input string into vector
-    Values1 = np.fromstring(input, sep=',')
+    if isinstance(input, np.ndarray):
+        Values1 = input
+    else:
+        Values1 = np.fromstring(input, sep=',')
 
     #add a 1 to the front of the vector, !remember the first entry of the vector is the label!
     Values1[0] = 1
@@ -92,7 +95,26 @@ def neuralNetwork(input):
     return (Values2, Values3)
     
 
+#uses neuralNetwork function to output the chances of each number and the maximum (prediction)
+def neuralNetworkAnalysis(input):
+    #get output node values from neural network
+    Output = neuralNetwork(input)[1]
+    
+    #softmax output
+    Chances = outActiv(Output)
+
+    #find maximum
+    Prediction = np.argmax(Chances)
+
+    #print
+    #print(Prediction)
+    print(' | '.join(f'{i}: {round(100*x,1)}' for i, x in enumerate(Chances)))
+
+    return (Prediction,Chances)
+
+
 if __name__ == "__main__":
     with open("single_example.csv", "r") as csvfile:
         first_line = csvfile.readline()
     print(neuralNetwork(first_line))
+    neuralNetworkAnalysis(first_line)
